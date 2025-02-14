@@ -1,7 +1,6 @@
 package online.book.store.repository.impl;
 
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import online.book.store.exception.DataProcessingException;
 import online.book.store.model.Book;
