@@ -10,7 +10,9 @@ import online.book.store.model.Book;
 import online.book.store.repository.BookRepository;
 import online.book.store.service.BookService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
@@ -39,11 +41,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDto update(CreateBookRequestDto requestDto, Long id) {
+    public BookDto updateById(CreateBookRequestDto requestDto, Long id) {
         Book existingBook = bookRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find book with id: " + id));
         bookMapper.updateBookFromDto(requestDto, existingBook);
-        return bookMapper.toDto(bookRepository.save(existingBook));
+        return bookMapper.toDto(existingBook);
     }
 
     @Override
