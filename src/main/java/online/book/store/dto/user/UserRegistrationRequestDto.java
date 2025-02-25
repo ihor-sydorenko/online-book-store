@@ -15,16 +15,20 @@ import org.hibernate.validator.constraints.Length;
 public class UserRegistrationRequestDto {
     @Email
     @NotBlank
+    @Length(max = 255)
     private String email;
     @NotBlank
-    @Length(min = 8, max = 100)
+    @Length(min = 8, max = 255)
     private String password;
     @NotBlank
-    @Length(min = 8, max = 100)
+    @Length(min = 8, max = 255)
     private String repeatPassword;
     @NotBlank
+    @Length(max = 255)
     private String firstName;
     @NotBlank
+    @Length(max = 255)
     private String lastName;
+    @Length(max = 255)
     private String shippingAddress;
 }
