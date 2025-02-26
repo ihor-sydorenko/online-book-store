@@ -30,12 +30,8 @@ public class UserServiceImpl implements UserService {
                     String.format("User with email: %s already exist. Please try another.",
                             requestDto.getEmail()));
         }
-        User user = new User();
+        User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        user.setEmail(requestDto.getEmail());
-        user.setFirstName(requestDto.getFirstName());
-        user.setLastName(requestDto.getLastName());
-        user.setShippingAddress(requestDto.getShippingAddress());
         user.setRoles(Set.of(roleRepository.findRoleByName(Role.RoleName.ROLE_USER)));
         return userMapper.toDto(userRepository.save(user));
     }
