@@ -30,7 +30,8 @@ public class AuthenticationController {
             throws RegistrationException {
         return userService.register(requestDto);
     }
-
+    @Operation(summary = "Login user",
+            description = "Endpoint for login existing user, return token in response")
     @PostMapping("/login")
     public UserLoginResponseDto login(@RequestBody UserLoginRequestDto requestDto) {
         return authenticationService.authenticate(requestDto);
