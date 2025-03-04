@@ -3,6 +3,7 @@ package online.book.store.service.impl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import online.book.store.dto.book.BookDto;
+import online.book.store.dto.book.BookDtoWithoutCategoryIds;
 import online.book.store.dto.book.BookSearchParametersDto;
 import online.book.store.dto.book.CreateBookRequestDto;
 import online.book.store.exception.EntityNotFoundException;
@@ -11,6 +12,7 @@ import online.book.store.model.Book;
 import online.book.store.repository.book.BookRepository;
 import online.book.store.repository.book.BookSpecificationBuilder;
 import online.book.store.service.BookService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -64,5 +66,11 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findAll(bookSpecification, pageable).stream()
                 .map(bookMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Pageable pageable, Long id) {
+        return bookRepository.findAllByCategoriesId(pageable, id)
+                .map(bookMapper::toDtoWithoutCategories);
     }
 }
