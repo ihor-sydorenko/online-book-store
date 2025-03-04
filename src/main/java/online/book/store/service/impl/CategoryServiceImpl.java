@@ -1,6 +1,5 @@
 package online.book.store.service.impl;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import online.book.store.dto.category.CategoryDto;
 import online.book.store.dto.category.CategoryRequestDto;
@@ -9,6 +8,7 @@ import online.book.store.mapper.CategoryMapper;
 import online.book.store.model.Category;
 import online.book.store.repository.category.CategoryRepository;
 import online.book.store.service.CategoryService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +19,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public List<CategoryDto> findAll(Pageable pageable) {
-        return categoryRepository.findAll(pageable).stream()
-                .map(categoryMapper::toDto)
-                .toList();
+    public Page<CategoryDto> findAll(Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(categoryMapper::toDto);
     }
 
     @Override

@@ -3,13 +3,13 @@ package online.book.store.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import online.book.store.dto.book.BookDtoWithoutCategoryIds;
 import online.book.store.dto.category.CategoryDto;
 import online.book.store.dto.category.CategoryRequestDto;
 import online.book.store.service.BookService;
 import online.book.store.service.CategoryService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +34,7 @@ public class CategoryController {
     @Operation(summary = "Get all categories", description = "Get a list of all categories")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
-    public List<CategoryDto> getAll(Pageable pageable) {
+    public Page<CategoryDto> getAll(Pageable pageable) {
         return categoryService.findAll(pageable);
     }
 
@@ -73,7 +73,7 @@ public class CategoryController {
             description = "Get a list of all books from specific category by id")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}/books")
-    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(Pageable pageable,
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Pageable pageable,
                                                                 @PathVariable Long id) {
         return bookService.getBooksByCategoryId(pageable, id);
     }

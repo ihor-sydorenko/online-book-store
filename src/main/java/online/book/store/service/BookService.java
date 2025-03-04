@@ -5,6 +5,7 @@ import online.book.store.dto.book.BookDto;
 import online.book.store.dto.book.BookDtoWithoutCategoryIds;
 import online.book.store.dto.book.BookSearchParametersDto;
 import online.book.store.dto.book.CreateBookRequestDto;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BookService {
@@ -20,5 +21,5 @@ public interface BookService {
 
     List<BookDto> search(BookSearchParametersDto parametersDto, Pageable pageable);
 
-    List<BookDtoWithoutCategoryIds> getBooksByCategoryId(Pageable pageable, Long id);
+    Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Pageable pageable, Long id);
 }
