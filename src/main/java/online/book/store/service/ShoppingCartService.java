@@ -8,11 +8,13 @@ import online.book.store.model.User;
 public interface ShoppingCartService {
     void createShoppingCart(User user);
 
-    ShoppingCartDto getShoppingCartByUser();
+    ShoppingCartDto getShoppingCartByUserId(Long userId);
 
-    ShoppingCartDto addBookToShoppingCart(CartItemRequestDto requestDto);
+    ShoppingCartDto addBookToShoppingCart(CartItemRequestDto requestDto, Long userId);
 
-    ShoppingCartDto updateCartItem(UpdateCartItemRequestDto requestDto, Long cartItemId);
+    ShoppingCartDto updateCartItem(UpdateCartItemRequestDto requestDto,
+                                   Long cartItemId,
+                                   Long userId);
 
-    ShoppingCartDto deleteCartItemById(Long id);
+    void deleteCartItemById(Long id, Long userId);
 }
