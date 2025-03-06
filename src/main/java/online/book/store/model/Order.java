@@ -43,7 +43,7 @@ public class Order {
     @Column(name = "total", nullable = false)
     private BigDecimal total;
     @Column(name = "order_date", nullable = false)
-    private final LocalDateTime orderDate = LocalDateTime.now();
+    private LocalDateTime orderDate = LocalDateTime.now();
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
     @NotEmpty
