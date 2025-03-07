@@ -150,6 +150,7 @@
                 <version>${liquibase.version}</version>
                 <configuration>
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
+                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.yaml</changeLogFile>
                 </configuration>
             </plugin>
         </plugins>
