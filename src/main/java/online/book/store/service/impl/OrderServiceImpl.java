@@ -37,8 +37,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto placeOrder(OrderRequestDto requestDto, Long userId) {
-        ShoppingCart shoppingCart = shoppingCartRepository.
-                findShoppingCartByUserId(userId).orElseThrow(
+        ShoppingCart shoppingCart = shoppingCartRepository
+                .findShoppingCartByUserId(userId).orElseThrow(
                         () -> new EntityNotFoundException(""));
         Order order = createOrder(shoppingCart, requestDto);
         shoppingCartService.clearShoppingCart();
@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId, Pageable pageable) {
-        Order order = orderRepository.findOrderById(orderId, pageable).orElseThrow(
+        Order order = orderRepository.findOrderById(orderId).orElseThrow(
                 () -> new EntityNotFoundException(""));
         return orderItemRepository.getAllByOrder(order, pageable);
     }

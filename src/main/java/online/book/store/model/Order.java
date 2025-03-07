@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,7 +36,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @Column(nullable = false, unique = true, columnDefinition = "VARCHAR(255)")
+    @Column(name = "status", nullable = false, unique = true, columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Status status = Status.NEW;
     @Column(name = "total", nullable = false)
