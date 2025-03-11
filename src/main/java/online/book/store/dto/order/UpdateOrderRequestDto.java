@@ -1,6 +1,8 @@
 package online.book.store.dto.order;
 
-import online.book.store.model.Order;
+import lombok.Data;
 
-public record UpdateOrderRequestDto(Order.Status status) {
+@Data
+public class UpdateOrderRequestDto {
+    private String status;
 }

@@ -38,7 +38,7 @@ public class Order {
     private User user;
     @Column(name = "status", nullable = false, unique = true, columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
-    private Status status = Status.NEW;
+    private Status status;
     @Column(name = "total", nullable = false)
     private BigDecimal total;
     @Column(name = "order_date", nullable = false)

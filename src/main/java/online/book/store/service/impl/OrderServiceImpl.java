@@ -14,6 +14,7 @@ import online.book.store.mapper.OrderMapper;
 import online.book.store.model.Order;
 import online.book.store.model.OrderItem;
 import online.book.store.model.ShoppingCart;
+import online.book.store.model.User;
 import online.book.store.repository.order.OrderItemRepository;
 import online.book.store.repository.order.OrderRepository;
 import online.book.store.repository.shoppingcart.ShoppingCartRepository;
@@ -37,32 +38,31 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto placeOrder(OrderRequestDto requestDto, Long userId) {
-        ShoppingCart shoppingCart = shoppingCartRepository
-                .findShoppingCartByUserId(userId).orElseThrow(
-                        () -> new EntityNotFoundException(""));
+        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Can't find shoppingCart by id: %s", userId)));
         Order order = createOrder(shoppingCart, requestDto);
-        shoppingCartService.clearShoppingCart();
+        shoppingCartService.clearShoppingCart(userId);
         return orderMapper.toDto(orderRepository.save(order));
     }
 
     @Override
-    public Page<OrderResponseDto> getAllOrdersByUserId(Long userId, Pageable pageable) {
-        return orderRepository.findAllByUserId(pageable, userId).map(orderMapper::toDto);
+    public Page<OrderResponseDto> getAllOrdersByUser(User user, Pageable pageable) {
+        return orderRepository.findAllByUser(user, pageable).map(orderMapper::toDto);
     }
 
     @Override
     public OrderResponseDto updateOrderStatusById(UpdateOrderRequestDto requestDto, Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new EntityNotFoundException("Can't find order"));
-        order.setStatus(Order.Status.valueOf(requestDto.status().name()));
+        Order order = orderRepository.findOrderById(orderId).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Can't find order by id: %s", orderId)));
+        order.setStatus(Order.Status.valueOf(requestDto.getStatus().toUpperCase()));
         return orderMapper.toDto(orderRepository.save(order));
     }
 
     @Override
     public Page<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId, Pageable pageable) {
-        Order order = orderRepository.findOrderById(orderId).orElseThrow(
-                () -> new EntityNotFoundException(""));
-        return orderItemRepository.getAllByOrder(order, pageable);
+        return orderItemRepository.getAllByOrderId(orderId, pageable).map(orderItemMapper::toDto);
     }
 
     @Override
@@ -73,7 +73,8 @@ public class OrderServiceImpl implements OrderService {
                 .filter(orderItem -> orderItem.getId().equals(itemId))
                 .findFirst()
                 .map(orderItemMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException(""));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find "
+                        + "order item by id: %s, from order with id: %s", itemId, orderId)));
     }
 
     private Order createOrder(ShoppingCart shoppingCart, OrderRequestDto requestDto) {

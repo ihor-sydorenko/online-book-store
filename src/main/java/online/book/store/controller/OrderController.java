@@ -31,7 +31,8 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderItemService orderItemService;
 
-    @Operation
+    @Operation(summary = "Placing an order",
+            description = "Creating new order based on shopping cart")
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping()
     public OrderResponseDto createOrder(@RequestBody @Valid OrderRequestDto requestDto,
@@ -40,24 +41,26 @@ public class OrderController {
         return orderService.placeOrder(requestDto, user.getId());
     }
 
-    @Operation
+    @Operation(summary = "Retrieving the user's order history",
+            description = "Find all orders by user")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
     public Page<OrderResponseDto> getAllOrdersByUser(Authentication authentication,
                                                      Pageable pageable) {
         User user = (User) authentication.getPrincipal();
-        return orderService.getAllOrdersByUserId(user.getId(), pageable);
+        return orderService.getAllOrdersByUser(user, pageable);
     }
 
-    @Operation
+    @Operation(summary = "Updating order status", description = "Updating order status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping("/{id}")
-    public OrderResponseDto updateOrderStatus(@RequestBody UpdateOrderRequestDto requestDto,
+    public OrderResponseDto updateOrderStatus(@RequestBody @Valid UpdateOrderRequestDto requestDto,
                                               @PathVariable Long id) {
         return orderService.updateOrderStatusById(requestDto, id);
     }
 
-    @Operation
+    @Operation(summary = "Get all order items from order",
+            description = "Retrieving all order items for a specific order")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{orderId}/items")
     public Page<OrderItemResponseDto> getAllOrderItemsFromOrder(@PathVariable Long orderId,
@@ -65,10 +68,10 @@ public class OrderController {
         return orderService.getAllOrderItemsByOrderId(orderId, pageable);
     }
 
-    @Operation
+    @Operation(summary = "Get order item by id",
+            description = "Retrieving specific order item from an order")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{orderId}/items/{itemId}")
-    // `GET: /api/orders/{orderId}/items/{itemId}` (retrieving specific OrderItem from an order).
     public OrderItemResponseDto getOrderItemFromOrder(@PathVariable Long orderId,
                                                       @PathVariable Long itemId) {
         return orderService.getOrderItemByOrderIdAndItemId(orderId, itemId);
