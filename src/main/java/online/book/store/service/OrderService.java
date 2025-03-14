@@ -1,5 +1,6 @@
 package online.book.store.service;
 
+import java.util.List;
 import online.book.store.dto.order.OrderRequestDto;
 import online.book.store.dto.order.OrderResponseDto;
 import online.book.store.dto.order.UpdateOrderRequestDto;
@@ -15,7 +16,9 @@ public interface OrderService {
 
     OrderResponseDto updateOrderStatusById(UpdateOrderRequestDto requestDto, Long orderId);
 
-    Page<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId, Pageable pageable);
+    List<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId, Long userId);
 
-    OrderItemResponseDto getOrderItemByOrderIdAndItemId(Long orderId, Long itemId);
+    OrderItemResponseDto getOrderItemByIdAndOrderIdAndUserId(Long orderId,
+                                                             Long itemId,
+                                                             Long userId);
 }

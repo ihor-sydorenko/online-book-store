@@ -84,12 +84,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         shoppingCart.getCartItems().remove(cartItem);
     }
 
-    @Override
-    public void clearShoppingCart(Long userId) {
-        ShoppingCart shoppingCart = findShoppingCartByUserId(userId);
-        shoppingCart.getCartItems().clear();
-    }
-
     private ShoppingCart findShoppingCartByUserId(Long userId) {
         return shoppingCartRepository.findShoppingCartByUserId(userId).orElseThrow(
                 () -> new EntityNotFoundException(

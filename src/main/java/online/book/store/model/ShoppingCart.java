@@ -34,4 +34,8 @@ public class ShoppingCart {
     private Set<CartItem> cartItems = new HashSet<>();
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    public void clearShoppingCart() {
+        cartItems.clear();
+    }
 }

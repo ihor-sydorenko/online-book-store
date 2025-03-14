@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -38,14 +37,13 @@ public class Order {
     private User user;
     @Column(name = "status", nullable = false, unique = true, columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.NEW;
     @Column(name = "total", nullable = false)
     private BigDecimal total;
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate = LocalDateTime.now();
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
-    @NotEmpty
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems = new HashSet<>();
     @Column(name = "is_deleted", nullable = false)
