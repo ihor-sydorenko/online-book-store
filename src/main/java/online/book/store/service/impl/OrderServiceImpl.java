@@ -85,17 +85,6 @@ public class OrderServiceImpl implements OrderService {
                         () -> new EntityNotFoundException(String.format("Can't find order "
                                 + "item by id: %s, from order with id: %s", itemId, orderId)));
         return orderItemMapper.toDto(orderItem);
-
-        //        Order order = orderRepository.findOrderById(orderId).orElseThrow(
-        //                () -> new EntityNotFoundException(String.format("Can't find "
-        //                        + "order by id: %s", orderId)));
-        //        return order.getOrderItems().stream()
-        //                .filter(orderItem -> orderItem.getId().equals(itemId))
-        //                .findFirst()
-        //                .map(orderItemMapper::toDto)
-        //                .orElseThrow(() -> new EntityNotFoundException(String.format("Can't find "
-        //                        + "order item by id: %s, from order with id: %s", itemId,
-        //                        orderId)));
     }
 
     private Order createOrder(ShoppingCart shoppingCart, OrderRequestDto requestDto) {
