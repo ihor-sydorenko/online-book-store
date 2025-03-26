@@ -1,6 +1,5 @@
 package online.book.store.controller;
 
-import online.book.store.config.TestUtil;
 import static online.book.store.config.TestUtil.createBookDto;
 import static online.book.store.config.TestUtil.createBookRequestDto;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
@@ -16,10 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import online.book.store.config.TestUtil;
 import online.book.store.dto.book.BookDto;
 import online.book.store.dto.book.CreateBookRequestDto;
 import org.junit.jupiter.api.BeforeEach;
