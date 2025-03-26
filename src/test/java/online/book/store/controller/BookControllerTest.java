@@ -1,7 +1,12 @@
 package online.book.store.controller;
 
+import online.book.store.config.TestUtil;
+import static online.book.store.config.TestUtil.createBookDto;
+import static online.book.store.config.TestUtil.createBookRequestDto;
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,7 +36,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -74,7 +78,7 @@ class BookControllerTest {
                 result.getResponse().getContentAsString(), BookDto.class);
         assertNotNull(actual);
         assertNotNull(actual.getId());
-        EqualsBuilder.reflectionEquals(expected, actual, "id");
+        assertTrue(reflectionEquals(expected, actual, "id"));
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -97,16 +101,7 @@ class BookControllerTest {
     @Test
     @DisplayName("Get all books - return a list of all available books")
     void getAll_GivenBooksInCatalog_ReturnAllBooks() throws Exception {
-        List<BookDto> expected = new ArrayList<>();
-        expected.add(new BookDto().setId(1L).setTitle("Title1").setAuthor("Author1")
-                .setIsbn("000.1").setPrice(BigDecimal.valueOf(19)).setDescription("Description1")
-                .setCoverImage("CoverImage1").setCategoryIds(Set.of(1L)));
-        expected.add(new BookDto().setId(2L).setTitle("Title2").setAuthor("Author2")
-                .setIsbn("000.2").setPrice(BigDecimal.valueOf(29)).setDescription("Description2")
-                .setCoverImage("CoverImage2").setCategoryIds(Set.of(1L)));
-        expected.add(new BookDto().setId(3L).setTitle("Title3").setAuthor("Author3")
-                .setIsbn("000.3").setPrice(BigDecimal.valueOf(39)).setDescription("Description3")
-                .setCoverImage("CoverImage3").setCategoryIds(Set.of(2L)));
+        List<BookDto> expected = TestUtil.getExpectedListOfBooks();
 
         MvcResult result = mockMvc.perform(get("/books")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -155,6 +150,7 @@ class BookControllerTest {
     void updateBook_ValidUpdateRequestDto_ReturnUpdatedBook() throws Exception {
         Long bookId = 1L;
         CreateBookRequestDto requestDto = createBookRequestDto();
+        BookDto expected = createBookDto(1L);
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(put("/books/{id}", bookId)
@@ -168,7 +164,7 @@ class BookControllerTest {
                 result.getResponse().getContentAsString(), BookDto.class);
         assertNotNull(actual);
         assertNotNull(actual.getId());
-        EqualsBuilder.reflectionEquals(requestDto, actual, "id");
+        assertTrue(reflectionEquals(expected, actual, "id"));
 
     }
 
@@ -220,29 +216,5 @@ class BookControllerTest {
         assertNotNull(actual);
         assertEquals(3, actual.length);
         assertEquals("Title2", actual[1].getTitle());
-    }
-
-    private static CreateBookRequestDto createBookRequestDto() {
-        return new CreateBookRequestDto()
-                .setTitle("Title1")
-                .setAuthor("Author1")
-                .setIsbn("0.001")
-                .setPrice(BigDecimal.valueOf(19.5))
-                .setDescription("Description1")
-                .setCoverImage("CoverImage1")
-                .setCategoryIds(Set.of(1L, 2L));
-    }
-
-    private static BookDto createBookDto(Long id) {
-        CreateBookRequestDto requestDto = createBookRequestDto();
-        return new BookDto()
-                .setId(id)
-                .setTitle(requestDto.getTitle())
-                .setAuthor(requestDto.getAuthor())
-                .setIsbn(requestDto.getIsbn())
-                .setPrice(requestDto.getPrice())
-                .setDescription(requestDto.getDescription())
-                .setCoverImage(requestDto.getCoverImage())
-                .setCategoryIds(requestDto.getCategoryIds());
     }
 }

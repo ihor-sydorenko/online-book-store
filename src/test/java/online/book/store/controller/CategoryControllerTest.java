@@ -1,8 +1,12 @@
 package online.book.store.controller;
 
+import static online.book.store.config.TestUtil.createCategoryDto;
+import static online.book.store.config.TestUtil.createCategoryRequestDto;
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import online.book.store.config.CustomPageImpl;
-import online.book.store.dto.book.BookDto;
 import online.book.store.dto.book.BookDtoWithoutCategoryIds;
 import online.book.store.dto.category.CategoryDto;
 import online.book.store.dto.category.CategoryRequestDto;
@@ -32,7 +35,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -79,9 +81,9 @@ class CategoryControllerTest {
     @Test
     @DisplayName("Find category by existing id - return a category by id")
     void getCategoryById_ByExistingId_ReturnCategory() throws Exception {
-        Long categoryId = 2L;
+        Long categoryId = 1L;
         CategoryDto expected = createCategoryDto(categoryId);
-        MvcResult result = mockMvc.perform(get("/categories/{id}", 2)
+        MvcResult result = mockMvc.perform(get("/categories/{id}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -91,7 +93,7 @@ class CategoryControllerTest {
                 .readValue(result.getResponse().getContentAsString(), CategoryDto.class);
 
         assertNotNull(actual);
-        EqualsBuilder.reflectionEquals(expected, actual, "id");
+        assertTrue(reflectionEquals(expected, actual, "id"));
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -113,7 +115,7 @@ class CategoryControllerTest {
                 CategoryDto.class);
         assertNotNull(actual);
         assertNotNull(actual.getId());
-        EqualsBuilder.reflectionEquals(expected, actual, "id");
+        assertTrue(reflectionEquals(expected, actual, "id"));
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -137,22 +139,24 @@ class CategoryControllerTest {
     @DisplayName("Update category by id - should return updated category")
     void updateCategory_ValidUpdateRequest_ReturnUpdatedCategory() throws Exception {
         Long categoryId = 1L;
-        CategoryRequestDto expected = createCategoryRequestDto();
+        CategoryRequestDto requestDto = createCategoryRequestDto();
+        requestDto.setName("updatedName");
+        CategoryDto expected = createCategoryDto(categoryId);
         expected.setName("updatedName");
-        String jsonRequest = objectMapper.writeValueAsString(expected);
+        String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(put("/categories/{id}", categoryId)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expected))
+                        .content(objectMapper.writeValueAsString(requestDto))
                 )
                 .andExpect(status().isOk())
                 .andReturn();
 
-        BookDto actual = objectMapper.readValue(
-                result.getResponse().getContentAsString(), BookDto.class);
+        CategoryDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(), CategoryDto.class);
         assertNotNull(actual);
-        EqualsBuilder.reflectionEquals(expected, actual, "id");
+        assertTrue(reflectionEquals(expected, actual, "id"));
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -186,19 +190,5 @@ class CategoryControllerTest {
         assertNotNull(actual);
         assertFalse(actual.getContent().isEmpty());
         assertEquals(1, actual.getContent().size());
-    }
-
-    private static CategoryRequestDto createCategoryRequestDto() {
-        return new CategoryRequestDto()
-                .setName("Category1")
-                .setDescription("Description1");
-    }
-
-    private static CategoryDto createCategoryDto(Long id) {
-        createCategoryRequestDto();
-        return new CategoryDto()
-                .setId(id)
-                .setName("Category1")
-                .setDescription("Description1");
     }
 }
