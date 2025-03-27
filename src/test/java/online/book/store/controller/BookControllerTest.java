@@ -148,7 +148,7 @@ class BookControllerTest {
     void updateBook_ValidUpdateRequestDto_ReturnUpdatedBook() throws Exception {
         Long bookId = 1L;
         CreateBookRequestDto requestDto = createBookRequestDto();
-        BookDto expected = createBookDto(1L);
+        BookDto expected = createBookDto(bookId);
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(put("/books/{id}", bookId)
@@ -194,17 +194,17 @@ class BookControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Sql(scripts = "classpath:database/add-one-book.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @WithMockUser(username = "user", roles = {"USER"})
     @Test
     @DisplayName("Search books with parameters - should return matching books")
     void searchBooks_ValidSearchParameters_ReturnsListOfBooks() throws Exception {
-        createBookRequestDto();
-        createBookDto(2L);
-
-        MvcResult result = mockMvc.perform(get("/books/search")
-                        .param("title", "Title2")
-                        .param("author", "Author2")
-                        .param("isbn", "000.2")
+        MvcResult result = mockMvc.perform(get(
+                        "/books/search")
+                        .param("title", "Title")
+                        .param("author", "Author")
+                        .param("isbn", "99")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -212,7 +212,7 @@ class BookControllerTest {
         BookDto[] actual = objectMapper.readValue(result.getResponse()
                 .getContentAsByteArray(), BookDto[].class);
         assertNotNull(actual);
-        assertEquals(3, actual.length);
-        assertEquals("Title2", actual[1].getTitle());
+        assertEquals(1, actual.length);
+        assertEquals("Title", actual[0].getTitle());
     }
 }

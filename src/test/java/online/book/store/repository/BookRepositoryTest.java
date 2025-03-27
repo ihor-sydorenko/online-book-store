@@ -1,9 +1,10 @@
 package online.book.store.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collections;
 import online.book.store.model.Book;
 import online.book.store.repository.book.BookRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ class BookRepositoryTest {
         Long categoryId = 1L;
         Pageable pageable = PageRequest.of(0, 5);
         Page<Book> actual = bookRepository.findAllByCategoriesId(pageable, categoryId);
-        Assertions.assertEquals(2, actual.toList().size());
+        assertEquals(2, actual.toList().size());
     }
 
     @Test
@@ -41,6 +42,6 @@ class BookRepositoryTest {
         Long categoryId = 3L;
         Pageable pageable = PageRequest.of(0, 5);
         Page<Book> actual = bookRepository.findAllByCategoriesId(pageable, categoryId);
-        Assertions.assertEquals(Collections.emptyList(), actual.toList());
+        assertEquals(Collections.emptyList(), actual.toList());
     }
 }

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -63,6 +62,9 @@ class CategoryServiceImplTest {
 
         assertThat(actual).hasSize(1);
         assertThat(actual.toList().get(0)).isEqualTo(categoryDto);
+        verify(categoryRepository).findAll(pageable);
+        verify(categoryMapper).toDto(category);
+        verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
     @Test
@@ -70,7 +72,7 @@ class CategoryServiceImplTest {
     void getById_ExistingId_ReturnCategoryDto() {
         Long categoryId = 1L;
         Category category = new Category()
-                .setId(1L)
+                .setId(categoryId)
                 .setName("Category1")
                 .setDescription("Description1");
 
@@ -86,6 +88,9 @@ class CategoryServiceImplTest {
 
         assertNotNull(actual);
         assertEquals(categoryDto, actual);
+        verify(categoryRepository).findById(categoryId);
+        verify(categoryMapper).toDto(category);
+        verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
     @Test
@@ -97,6 +102,8 @@ class CategoryServiceImplTest {
         EntityNotFoundException actual = assertThrows(EntityNotFoundException.class,
                 () -> categoryService.getById(categoryId));
         assertEquals(expected, actual.getMessage());
+        verify(categoryRepository).findById(categoryId);
+        verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
     @Test
@@ -123,9 +130,9 @@ class CategoryServiceImplTest {
         CategoryDto actual = categoryService.save(requestDto);
 
         assertThat(actual).isEqualTo(categoryDto);
-        verify(categoryMapper, times(1)).toModel(requestDto);
-        verify(categoryRepository, times(1)).save(category);
-        verify(categoryMapper, times(1)).toDto(category);
+        verify(categoryMapper).toModel(requestDto);
+        verify(categoryRepository).save(category);
+        verify(categoryMapper).toDto(category);
         verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
@@ -158,6 +165,11 @@ class CategoryServiceImplTest {
         CategoryDto actual = categoryService.updateById(categoryId, requestDto);
 
         assertThat(actual).isEqualTo(categoryDto);
+        verify(categoryRepository).findById(categoryId);
+        verify(categoryMapper).updateCategoryFromDto(requestDto, categoryForUpdating);
+        verify(categoryRepository).save(categoryForUpdating);
+        verify(categoryMapper).toDto(categoryForUpdating);
+        verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
 
     @Test
@@ -174,6 +186,8 @@ class CategoryServiceImplTest {
         EntityNotFoundException actual = assertThrows(EntityNotFoundException.class,
                 () -> categoryService.updateById(categoryId, requestDto));
         assertEquals(expected, actual.getMessage());
+        verify(categoryRepository).findById(categoryId);
+        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -184,7 +198,7 @@ class CategoryServiceImplTest {
 
         categoryService.deleteById(categoryId);
 
-        verify(categoryRepository, times(1)).deleteById(categoryId);
+        verify(categoryRepository).deleteById(categoryId);
         verifyNoMoreInteractions(categoryRepository);
     }
 }

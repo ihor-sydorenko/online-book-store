@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -65,9 +64,9 @@ class BookServiceTest {
         BookDto actual = bookService.save(requestDto);
 
         assertThat(actual).isEqualTo(bookDto);
-        verify(bookMapper, times(1)).toModel(requestDto);
-        verify(bookRepository, times(1)).save(book);
-        verify(bookMapper, times(1)).toDto(book);
+        verify(bookMapper).toModel(requestDto);
+        verify(bookRepository).save(book);
+        verify(bookMapper).toDto(book);
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
@@ -88,6 +87,9 @@ class BookServiceTest {
 
         assertThat(actual).hasSize(1);
         assertThat(actual.get(0)).isEqualTo(bookDto);
+        verify(bookRepository).findAll(pageable);
+        verify(bookMapper).toDto(book);
+        verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
@@ -104,6 +106,9 @@ class BookServiceTest {
 
         assertNotNull(actual);
         assertEquals(bookDto, actual);
+        verify(bookRepository).findById(bookId);
+        verify(bookMapper).toDto(book);
+        verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
@@ -115,6 +120,8 @@ class BookServiceTest {
         EntityNotFoundException actual = assertThrows(EntityNotFoundException.class,
                 () -> bookService.findById(bookId));
         assertEquals(expected, actual.getMessage());
+        verify(bookRepository).findById(bookId);
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -142,6 +149,9 @@ class BookServiceTest {
         BookDto actual = bookService.updateById(requestDto, bookId);
 
         assertThat(actual).isEqualTo(bookDto);
+        verify(bookMapper).updateBookFromDto(requestDto, bookForUpdating);
+        verify(bookRepository).findById(bookId);
+        verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
@@ -163,6 +173,8 @@ class BookServiceTest {
         EntityNotFoundException actual = assertThrows(EntityNotFoundException.class,
                 () -> bookService.updateById(requestDto, bookId));
         assertEquals(expected, actual.getMessage());
+        verify(bookRepository).findById(bookId);
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -173,7 +185,7 @@ class BookServiceTest {
 
         bookService.deleteById(bookId);
 
-        verify(bookRepository, times(1)).deleteById(bookId);
+        verify(bookRepository).deleteById(bookId);
         verifyNoMoreInteractions(bookRepository);
     }
 
