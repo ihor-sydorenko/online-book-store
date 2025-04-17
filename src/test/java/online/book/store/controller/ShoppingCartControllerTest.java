@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import online.book.store.config.TestUtil;
 import online.book.store.dto.cartitem.CartItemRequestDto;
 import online.book.store.dto.cartitem.CartItemResponseDto;
 import online.book.store.dto.cartitem.UpdateCartItemRequestDto;
@@ -75,17 +75,7 @@ class ShoppingCartControllerTest {
     @Test
     @DisplayName("Find shopping cart by existing user - return a shopping cart")
     void getShoppingCartByUser_ExistingShoppingCart_ReturnShoppingCart() throws Exception {
-        Long userId = 1L;
-        CartItemResponseDto expectedCartItem = new CartItemResponseDto()
-                .setId(1L)
-                .setBookId(1L)
-                .setBookTitle("Title1")
-                .setQuantity(3);
-
-        ShoppingCartDto expected = new ShoppingCartDto()
-                .setId(1L)
-                .setUserId(userId)
-                .setCartItemsDto(Set.of(expectedCartItem));
+        CartItemResponseDto expectedCartItem = TestUtil.getExpectedCartItem(3);
 
         MvcResult result = mockMvc.perform(get("/cart")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,6 +85,8 @@ class ShoppingCartControllerTest {
 
         ShoppingCartDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 ShoppingCartDto.class);
+
+        ShoppingCartDto expected = TestUtil.getExpectedShoppingCart(Set.of(expectedCartItem));
         assertNotNull(actual);
         assertNotNull(actual.getId());
         assertTrue(reflectionEquals(expected, actual, "id"));
@@ -104,10 +96,7 @@ class ShoppingCartControllerTest {
     @Test
     @DisplayName("Add book to shopping cart with valid request dto - success")
     void addBookToShoppingCart_ValidRequestDto_Success() throws Exception {
-        Long userId = 1L;
-        CartItemRequestDto requestDto = new CartItemRequestDto()
-                .setBookId(2L)
-                .setQuantity(1);
+        CartItemRequestDto requestDto = TestUtil.createCartItemRequestDto();
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(post("/cart")
@@ -120,27 +109,28 @@ class ShoppingCartControllerTest {
         ShoppingCartDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(), ShoppingCartDto.class);
 
-        Set<CartItemResponseDto> expectedCartItems = new HashSet<>();
-        expectedCartItems.add(new CartItemResponseDto()
-                .setId(1L)
-                .setBookId(1L)
-                .setBookTitle("Title1")
-                .setQuantity(3));
-        expectedCartItems.add(new CartItemResponseDto()
-                .setId(2L)
-                .setBookId(2L)
-                .setBookTitle("Title2")
-                .setQuantity(1));
-
-        ShoppingCartDto expected = new ShoppingCartDto()
-                .setId(1L)
-                .setUserId(userId)
-                .setCartItemsDto(expectedCartItems);
-
+        Set<CartItemResponseDto> expectedCartItems = TestUtil.getExpectedSetOfCartItems();
+        ShoppingCartDto expected = TestUtil.getExpectedShoppingCart(expectedCartItems);
         assertTrue(reflectionEquals(expected, actual, "id"));
         assertNotNull(actual);
         assertNotNull(actual.getId());
         assertNotNull(actual.getCartItemsDto());
+    }
+
+    @WithMockUser(username = "user", roles = {"USER"})
+    @Test
+    @DisplayName("Add book to shopping cart with incorrect request dto - return bad request")
+    void addBookToShoppingCart_InvalidRequestDto_ReturnBadRequest() throws Exception {
+        CartItemRequestDto requestDto = new CartItemRequestDto()
+                .setQuantity(4);
+        String jsonRequest = objectMapper.writeValueAsString(requestDto);
+
+        mockMvc.perform(post("/cart")
+                        .content(jsonRequest)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
     }
 
     @WithMockUser(username = "user", roles = {"USER"})
@@ -161,21 +151,26 @@ class ShoppingCartControllerTest {
         ShoppingCartDto actual = objectMapper
                 .readValue(result.getResponse().getContentAsString(), ShoppingCartDto.class);
 
-        CartItemResponseDto expectedCartItem = new CartItemResponseDto()
-                .setId(1L)
-                .setBookId(1L)
-                .setBookTitle("Title1")
-                .setQuantity(7);
-
-        ShoppingCartDto expected = new ShoppingCartDto()
-                .setId(1L)
-                .setUserId(1L)
-                .setCartItemsDto(Set.of(expectedCartItem));
-
+        CartItemResponseDto expectedCartItem = TestUtil.getExpectedCartItem(7);
+        ShoppingCartDto expected = TestUtil.getExpectedShoppingCart(Set.of(expectedCartItem));
         assertTrue(reflectionEquals(expected, actual, "id"));
         assertNotNull(actual);
         assertNotNull(actual.getId());
         assertNotNull(actual.getCartItemsDto());
+    }
+
+    @WithMockUser(username = "user", roles = {"USER"})
+    @Test
+    @DisplayName("Update cart item quantity when cart item not found should return not found")
+    void updateBookQuantity_InvalidCartItemId_ReturnNotFound() throws Exception {
+        UpdateCartItemRequestDto requestDto = new UpdateCartItemRequestDto()
+                .setQuantity(7);
+
+        String jsonRequest = objectMapper.writeValueAsString(requestDto);
+        mockMvc.perform(put("/cart/cart-items/{id}", 100L)
+                        .content(jsonRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @WithMockUser(username = "user", roles = {"USER"})

@@ -1,5 +1,6 @@
 package online.book.store.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Optional;
@@ -35,6 +36,8 @@ class ShoppingCartRepositoryTest {
         user.setLastName("Sydorenko");
         Optional<ShoppingCart> shoppingCart =
                 shoppingCartRepository.findShoppingCartByUserId(userId);
+
         assertNotNull(shoppingCart);
+        assertEquals(1, shoppingCart.get().getId());
     }
 }

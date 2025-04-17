@@ -2,12 +2,16 @@ package online.book.store.config;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import online.book.store.dto.book.BookDto;
 import online.book.store.dto.book.CreateBookRequestDto;
+import online.book.store.dto.cartitem.CartItemRequestDto;
+import online.book.store.dto.cartitem.CartItemResponseDto;
 import online.book.store.dto.category.CategoryDto;
 import online.book.store.dto.category.CategoryRequestDto;
+import online.book.store.dto.shoppingcart.ShoppingCartDto;
 
 public class TestUtil {
     public static List<BookDto> getExpectedListOfBooks() {
@@ -60,5 +64,41 @@ public class TestUtil {
                 .setId(id)
                 .setName(requestDto.getName())
                 .setDescription(requestDto.getDescription());
+    }
+
+    public static CartItemResponseDto getExpectedCartItem(int quantity) {
+        return new CartItemResponseDto()
+                .setId(1L)
+                .setBookId(1L)
+                .setBookTitle("Title1")
+                .setQuantity(quantity);
+    }
+
+    public static CartItemRequestDto createCartItemRequestDto() {
+        return new CartItemRequestDto()
+                .setBookId(2L)
+                .setQuantity(1);
+    }
+
+    public static Set<CartItemResponseDto> getExpectedSetOfCartItems() {
+        Set<CartItemResponseDto> expectedCartItems = new HashSet<>();
+        expectedCartItems.add(new CartItemResponseDto()
+                .setId(1L)
+                .setBookId(1L)
+                .setBookTitle("Title1")
+                .setQuantity(3));
+        expectedCartItems.add(new CartItemResponseDto()
+                .setId(2L)
+                .setBookId(2L)
+                .setBookTitle("Title2")
+                .setQuantity(1));
+        return expectedCartItems;
+    }
+
+    public static ShoppingCartDto getExpectedShoppingCart(Set<CartItemResponseDto> cartItemsDto) {
+        return new ShoppingCartDto()
+                .setId(1L)
+                .setUserId(1L)
+                .setCartItemsDto(cartItemsDto);
     }
 }
