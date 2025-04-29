@@ -96,7 +96,9 @@ class ShoppingCartControllerTest {
     @Test
     @DisplayName("Add book to shopping cart with valid request dto - success")
     void addBookToShoppingCart_ValidRequestDto_Success() throws Exception {
-        CartItemRequestDto requestDto = TestUtil.createCartItemRequestDto();
+        Long bookId = 2L;
+        int quantity = 1;
+        CartItemRequestDto requestDto = TestUtil.createCartItemRequestDto(bookId, quantity);
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
         MvcResult result = mockMvc.perform(post("/cart")

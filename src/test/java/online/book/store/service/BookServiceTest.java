@@ -156,7 +156,7 @@ class BookServiceTest {
 
     @Test
     @DisplayName("Verify updateById() method with non existing id, method throw exception")
-    void updateById_NonExistingId_throwException() {
+    void updateById_NonExistingId_ThrowException() {
         Long bookId = 15L;
 
         CreateBookRequestDto requestDto = new CreateBookRequestDto()

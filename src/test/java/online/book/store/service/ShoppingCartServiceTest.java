@@ -7,9 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.Optional;
+import online.book.store.config.TestUtil;
 import online.book.store.dto.cartitem.CartItemRequestDto;
 import online.book.store.dto.cartitem.UpdateCartItemRequestDto;
 import online.book.store.dto.shoppingcart.ShoppingCartDto;
@@ -50,17 +49,9 @@ class ShoppingCartServiceTest {
     @DisplayName("Get shopping cart by valid user id - return shopping card")
     void getShoppingCartByUserId_ValidUserId_ReturnShoppingCart() {
         Long userId = 1L;
-        User user = new User()
-                .setId(userId)
-                .setEmail("ihor@gmail.com");
-
-        ShoppingCart shoppingCart = new ShoppingCart()
-                .setId(userId)
-                .setUser(user)
-                .setCartItems(new HashSet<>());
-
-        ShoppingCartDto expected = new ShoppingCartDto();
-        expected.setId(userId);
+        User user = TestUtil.createUser(userId);
+        ShoppingCart shoppingCart = TestUtil.createShoppingCart(userId, user);
+        ShoppingCartDto expected = TestUtil.createEmptyExpectedShoppingCart(userId);
 
         when(shoppingCartRepository.findShoppingCartByUserId(userId))
                 .thenReturn(Optional.of(shoppingCart));
@@ -97,34 +88,14 @@ class ShoppingCartServiceTest {
         Long bookId = 1L;
         int quantity = 1;
 
-        final User user = new User()
-                .setId(userId)
-                .setEmail("ihor@gmail.com");
-
-        Book book = new Book()
-                .setId(bookId)
-                .setTitle("Title1")
-                .setAuthor("Author1")
-                .setIsbn("000.1")
-                .setPrice(BigDecimal.valueOf(19))
-                .setDescription("Description1")
-                .setCoverImage("CoverImage1");
-
-        ShoppingCartDto expected = new ShoppingCartDto();
-        expected.setId(userId);
-
-        CartItemRequestDto requestDto = new CartItemRequestDto()
-                .setBookId(bookId)
+        User user = TestUtil.createUser(userId);
+        Book book = TestUtil.createBook(bookId);
+        ShoppingCartDto expected = TestUtil.createEmptyExpectedShoppingCart(userId);
+        CartItemRequestDto requestDto = TestUtil.createCartItemRequestDto(bookId, quantity);
+        CartItem cartItem = new CartItem()
+                .setBook(book)
                 .setQuantity(quantity);
-
-        CartItem cartItem = new CartItem();
-        cartItem.setBook(book);
-        cartItem.setQuantity(quantity);
-
-        ShoppingCart shoppingCart = new ShoppingCart()
-                .setId(userId)
-                .setUser(user)
-                .setCartItems(new HashSet<>());
+        ShoppingCart shoppingCart = TestUtil.createShoppingCart(userId, user);
 
         when(cartItemMapper.toModel(requestDto)).thenReturn(cartItem);
         when(shoppingCartRepository.findShoppingCartByUserId(userId))
@@ -151,35 +122,13 @@ class ShoppingCartServiceTest {
         Long bookId = 1L;
         int initialQuantity = 5;
 
-        User user = new User()
-                .setId(userId)
-                .setEmail("ihor@gmail.com");
-
-        Book book = new Book()
-                .setId(bookId)
-                .setTitle("Title1")
-                .setAuthor("Author1")
-                .setIsbn("000.1")
-                .setPrice(BigDecimal.valueOf(19))
-                .setDescription("Description1")
-                .setCoverImage("CoverImage1");
-
-        ShoppingCart shoppingCart = new ShoppingCart()
-                .setId(userId)
-                .setUser(user)
-                .setCartItems(new HashSet<>());
-
-        CartItem cartItem = new CartItem()
-                .setId(cartItemId)
-                .setShoppingCart(shoppingCart)
-                .setBook(book)
-                .setQuantity(initialQuantity);
-
+        User user = TestUtil.createUser(userId);
+        Book book = TestUtil.createBook(bookId);
+        ShoppingCart shoppingCart = TestUtil.createShoppingCart(userId, user);
+        CartItem cartItem = TestUtil.createCartItem(cartItemId, shoppingCart, book,
+                initialQuantity);
         shoppingCart.getCartItems().add(cartItem);
-
-        ShoppingCartDto expected = new ShoppingCartDto();
-        expected.setId(userId);
-
+        ShoppingCartDto expected = TestUtil.createEmptyExpectedShoppingCart(userId);
         UpdateCartItemRequestDto requestDto = new UpdateCartItemRequestDto()
                 .setQuantity(7);
 
@@ -207,7 +156,8 @@ class ShoppingCartServiceTest {
     void updateCartItem_NotFoundShoppingCard_ThrowException() {
         Long userId = 15L;
         Long cartItemId = 1L;
-        UpdateCartItemRequestDto requestDto = new UpdateCartItemRequestDto().setQuantity(2);
+        UpdateCartItemRequestDto requestDto = new UpdateCartItemRequestDto()
+                .setQuantity(2);
 
         when(shoppingCartRepository.findShoppingCartByUserId(userId)).thenReturn(Optional.empty());
         String expected = "Can't find shopping cart by id: " + userId;

@@ -12,6 +12,10 @@ import online.book.store.dto.cartitem.CartItemResponseDto;
 import online.book.store.dto.category.CategoryDto;
 import online.book.store.dto.category.CategoryRequestDto;
 import online.book.store.dto.shoppingcart.ShoppingCartDto;
+import online.book.store.model.Book;
+import online.book.store.model.CartItem;
+import online.book.store.model.ShoppingCart;
+import online.book.store.model.User;
 
 public class TestUtil {
     public static List<BookDto> getExpectedListOfBooks() {
@@ -74,10 +78,10 @@ public class TestUtil {
                 .setQuantity(quantity);
     }
 
-    public static CartItemRequestDto createCartItemRequestDto() {
+    public static CartItemRequestDto createCartItemRequestDto(Long bookId, int quantity) {
         return new CartItemRequestDto()
-                .setBookId(2L)
-                .setQuantity(1);
+                .setBookId(bookId)
+                .setQuantity(quantity);
     }
 
     public static Set<CartItemResponseDto> getExpectedSetOfCartItems() {
@@ -100,5 +104,43 @@ public class TestUtil {
                 .setId(1L)
                 .setUserId(1L)
                 .setCartItemsDto(cartItemsDto);
+    }
+
+    public static ShoppingCartDto createEmptyExpectedShoppingCart(Long userId) {
+        return new ShoppingCartDto()
+                .setId(userId);
+    }
+
+    public static User createUser(Long userId) {
+        return new User()
+                .setId(userId)
+                .setEmail("ihor@gmail.com");
+    }
+
+    public static Book createBook(Long bookId) {
+        return new Book()
+                .setId(bookId)
+                .setTitle("Title1")
+                .setAuthor("Author1")
+                .setIsbn("000.1")
+                .setPrice(BigDecimal.valueOf(19))
+                .setDescription("Description1")
+                .setCoverImage("CoverImage1");
+    }
+
+    public static ShoppingCart createShoppingCart(Long id, User user) {
+        return new ShoppingCart()
+                .setId(id)
+                .setUser(user)
+                .setCartItems(new HashSet<>());
+    }
+
+    public static CartItem createCartItem(Long cartItemId, ShoppingCart shoppingCart,
+                                          Book book, int initialQuantity) {
+        return new CartItem()
+                .setId(cartItemId)
+                .setShoppingCart(shoppingCart)
+                .setBook(book)
+                .setQuantity(initialQuantity);
     }
 }
