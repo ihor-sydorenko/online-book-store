@@ -37,11 +37,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:database/add-categories-to-categories-table.sql",
-        "classpath:database/add-books-to-books-table.sql",
-        "classpath:database/add-books-categories-relationship.sql"
+@Sql(scripts = {"classpath:database/book/add-categories-to-categories-table.sql",
+        "classpath:database/book/add-books-to-books-table.sql",
+        "classpath:database/book/add-books-categories-relationship.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "classpath:database/delete-all.sql",
+@Sql(scripts = "classpath:database/book/delete-all.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class BookControllerTest {
     protected static MockMvc mockMvc;
@@ -142,7 +142,7 @@ class BookControllerTest {
                 .andReturn();
     }
 
-    @WithMockUser(username = "user", roles = {"ADMIN"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Update book by id - should return updated book")
     void updateBook_ValidUpdateRequestDto_ReturnUpdatedBook() throws Exception {
@@ -166,7 +166,7 @@ class BookControllerTest {
 
     }
 
-    @WithMockUser(username = "user", roles = {"ADMIN"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Update book by id with invalid request dto - should return Bad Request status")
     void updateBook_InvalidUpdateRequestDto_ReturnBadRequest() throws Exception {
@@ -183,7 +183,7 @@ class BookControllerTest {
                 .andReturn();
     }
 
-    @WithMockUser(username = "user", roles = {"ADMIN"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Delete book by existing id - delete book")
     void deleteBook_ByExistingId_DeleteBook() throws Exception {
@@ -194,7 +194,7 @@ class BookControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @Sql(scripts = "classpath:database/add-one-book.sql",
+    @Sql(scripts = "classpath:database/book/add-one-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @WithMockUser(username = "user", roles = {"USER"})
     @Test

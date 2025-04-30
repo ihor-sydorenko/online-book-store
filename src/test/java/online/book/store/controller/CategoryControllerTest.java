@@ -38,11 +38,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:database/add-categories-to-categories-table.sql",
-        "classpath:database/add-books-to-books-table.sql",
-        "classpath:database/add-books-categories-relationship.sql"
+@Sql(scripts = {"classpath:database/book/add-categories-to-categories-table.sql",
+        "classpath:database/book/add-books-to-books-table.sql",
+        "classpath:database/book/add-books-categories-relationship.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "classpath:database/delete-all.sql",
+@Sql(scripts = "classpath:database/book/delete-all.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class CategoryControllerTest {
     protected static MockMvc mockMvc;
